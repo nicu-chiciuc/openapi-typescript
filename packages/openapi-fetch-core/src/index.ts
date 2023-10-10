@@ -90,17 +90,6 @@ export type RequestOptions<T> = ParamsOption<T> &
 export default function createClient<Paths extends {}>(
   clientOptions: ClientOptions = {},
 ) {
-  const {
-    fetch: baseFetch = globalThis.fetch,
-    querySerializer: globalQuerySerializer,
-    bodySerializer: globalBodySerializer,
-    ...options
-  } = clientOptions;
-  let baseUrl = options.baseUrl ?? "";
-  if (baseUrl.endsWith("/")) {
-    baseUrl = baseUrl.slice(0, -1); // remove trailing slash
-  }
-
   async function coreFetch<
     TMethod extends HttpMethod,
     TPath extends keyof Paths,
@@ -117,6 +106,18 @@ export default function createClient<Paths extends {}>(
       TMethod extends keyof Paths[TPath] ? Paths[TPath][TMethod] : unknown
     >
   > {
+    const {
+      fetch: baseFetch = globalThis.fetch,
+      querySerializer: globalQuerySerializer,
+      bodySerializer: globalBodySerializer,
+      ...options
+    } = clientOptions;
+
+    let baseUrl = options.baseUrl ?? "";
+    if (baseUrl.endsWith("/")) {
+      baseUrl = baseUrl.slice(0, -1); // remove trailing slash
+    }
+
     const fetchOptions = { ...args[0], method: method.toUpperCase() };
 
     const {
