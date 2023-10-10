@@ -202,9 +202,7 @@ export default function createClient<Paths extends {}>(
     } as any);
   };
 
-  return {
-    core,
-  };
+  return core;
 }
 
 // utils
