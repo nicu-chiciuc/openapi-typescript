@@ -237,58 +237,6 @@ export default function createClient<Paths extends {}>(
 
   return {
     core,
-    /** Call a POST endpoint */
-    /** Call a DELETE endpoint */
-    async DELETE<P extends DeletePaths>(
-      url: P,
-      ...init: HasRequiredKeys<DeleteFetchOptions<P>> extends never
-        ? [DeleteFetchOptions<P>?]
-        : [DeleteFetchOptions<P>]
-    ) {
-      return coreFetch<P, "delete">(url, {
-        ...init[0],
-        method: "DELETE",
-      } as any);
-    },
-    /** Call a OPTIONS endpoint */
-    async OPTIONS<P extends OptionsPaths>(
-      url: P,
-      ...init: HasRequiredKeys<OptionsFetchOptions<P>> extends never
-        ? [OptionsFetchOptions<P>?]
-        : [OptionsFetchOptions<P>]
-    ) {
-      return coreFetch<P, "options">(url, {
-        ...init[0],
-        method: "OPTIONS",
-      } as any);
-    },
-    /** Call a HEAD endpoint */
-    async HEAD<P extends HeadPaths>(
-      url: P,
-      ...init: HasRequiredKeys<HeadFetchOptions<P>> extends never
-        ? [HeadFetchOptions<P>?]
-        : [HeadFetchOptions<P>]
-    ) {
-      return coreFetch<P, "head">(url, { ...init[0], method: "HEAD" } as any);
-    },
-    /** Call a PATCH endpoint */
-    async PATCH<P extends PatchPaths>(
-      url: P,
-      ...init: HasRequiredKeys<PatchFetchOptions<P>> extends never
-        ? [PatchFetchOptions<P>?]
-        : [PatchFetchOptions<P>]
-    ) {
-      return coreFetch<P, "patch">(url, { ...init[0], method: "PATCH" } as any);
-    },
-    /** Call a TRACE endpoint */
-    async TRACE<P extends TracePaths>(
-      url: P,
-      ...init: HasRequiredKeys<TraceFetchOptions<P>> extends never
-        ? [TraceFetchOptions<P>?]
-        : [TraceFetchOptions<P>]
-    ) {
-      return coreFetch<P, "trace">(url, { ...init[0], method: "TRACE" } as any);
-    },
   };
 }
 

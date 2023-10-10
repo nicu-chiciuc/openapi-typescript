@@ -509,9 +509,13 @@ describe("client", () => {
     it("returns empty object on 204", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 204, body: "" });
-      const { data, error, response } = await client.DELETE("/tag/{name}", {
-        params: { path: { name: "New Tag" } },
-      });
+      const { data, error, response } = await client.core(
+        "delete",
+        "/tag/{name}",
+        {
+          params: { path: { name: "New Tag" } },
+        },
+      );
 
       // assert correct data was returned
       expect(data).toEqual({});
@@ -730,22 +734,26 @@ describe("client", () => {
     });
   });
 
-  describe("DELETE()", () => {
+  describe("core('delete', )", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.DELETE("/anyMethod");
+      await client.core("delete", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("DELETE");
     });
 
     it("returns empty object on 204", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 204, body: "" });
-      const { data, error } = await client.DELETE("/blogposts/{post_id}", {
-        params: {
-          path: { post_id: "123" },
+      const { data, error } = await client.core(
+        "delete",
+        "/blogposts/{post_id}",
+        {
+          params: {
+            path: { post_id: "123" },
+          },
         },
-      });
+      );
 
       // assert correct data was returned
       expect(data).toEqual({});
@@ -761,11 +769,15 @@ describe("client", () => {
         status: 200,
         body: "",
       });
-      const { data, error } = await client.DELETE("/blogposts/{post_id}", {
-        params: {
-          path: { post_id: "123" },
+      const { data, error } = await client.core(
+        "delete",
+        "/blogposts/{post_id}",
+        {
+          params: {
+            path: { post_id: "123" },
+          },
         },
-      });
+      );
 
       // assert correct data was returned
       expect(data).toEqual({});
@@ -775,38 +787,38 @@ describe("client", () => {
     });
   });
 
-  describe("OPTIONS()", () => {
+  describe("core('options', )", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.OPTIONS("/anyMethod");
+      await client.core("options", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("OPTIONS");
     });
   });
 
-  describe("HEAD()", () => {
+  describe("core('head', )", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.HEAD("/anyMethod");
+      await client.core("head", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("HEAD");
     });
   });
 
-  describe("PATCH()", () => {
+  describe("core('patch', )", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.PATCH("/anyMethod");
+      await client.core("patch", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("PATCH");
     });
   });
 
-  describe("TRACE()", () => {
+  describe("core('trace', )", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.TRACE("/anyMethod");
+      await client.core("trace", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("TRACE");
     });
   });
