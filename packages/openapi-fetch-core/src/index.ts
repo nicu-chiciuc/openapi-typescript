@@ -247,14 +247,14 @@ export default function createClient<Paths extends {}>(
     //   return coreFetch<P, "get">(url, { ...init[0], method: "GET" } as any);
     // },
     /** Call a PUT endpoint */
-    async PUT<P extends PutPaths>(
-      url: P,
-      ...init: HasRequiredKeys<PutFetchOptions<P>> extends never
-        ? [PutFetchOptions<P>?]
-        : [PutFetchOptions<P>]
-    ) {
-      return coreFetch<P, "put">(url, { ...init[0], method: "PUT" } as any);
-    },
+    // async PUT<P extends PutPaths>(
+    //   url: P,
+    //   ...init: HasRequiredKeys<PutFetchOptions<P>> extends never
+    //     ? [PutFetchOptions<P>?]
+    //     : [PutFetchOptions<P>]
+    // ) {
+    //   return coreFetch<P, "put">(url, { ...init[0], method: "PUT" } as any);
+    // },
     /** Call a POST endpoint */
     async POST<P extends PostPaths>(
       url: P,

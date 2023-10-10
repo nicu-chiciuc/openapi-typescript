@@ -37,7 +37,6 @@ describe("client", () => {
   it("generates all proper functions", () => {
     const client = createClient<paths>();
 
-    expect(client).toHaveProperty("PUT");
     expect(client).toHaveProperty("POST");
     expect(client).toHaveProperty("DELETE");
     expect(client).toHaveProperty("OPTIONS");
@@ -277,15 +276,15 @@ describe("client", () => {
 
         // expect error on missing `body`
         // @ts-expect-error
-        await client.PUT("/blogposts");
+        await client.core("put", "/blogposts");
 
         // expect error on missing fields
         // @ts-expect-error
-        await client.PUT("/blogposts", { body: { title: "Foo" } });
+        await client.core("put", "/blogposts", { body: { title: "Foo" } });
 
         // expect present body to be good enough (all fields optional)
         // (no error)
-        await client.PUT("/blogposts", {
+        await client.core("put", "/blogposts", {
           body: {
             title: "Foo",
             body: "Bar",
@@ -299,13 +298,13 @@ describe("client", () => {
         const client = createClient<paths>();
 
         // expect error on wrong body type
-        await client.PUT("/blogposts-optional-inline", {
+        await client.core("put", "/blogposts-optional-inline", {
           // @ts-expect-error
           body: { error: true },
         });
 
         // (no error)
-        await client.PUT("/blogposts-optional-inline", {
+        await client.core("put", "/blogposts-optional-inline", {
           body: {
             title: "",
             publish_date: 3,
@@ -319,14 +318,18 @@ describe("client", () => {
         const client = createClient<paths>();
 
         // assert missing `body` doesn’t raise a TS error
-        await client.PUT("/blogposts-optional");
+        await client.core("put", "/blogposts-optional");
 
         // assert error on type mismatch
-        // @ts-expect-error
-        await client.PUT("/blogposts-optional", { body: { error: true } });
+        await client.core("put", "/blogposts-optional", {
+          body: {
+            // @ts-expect-error
+            error: true,
+          },
+        });
 
         // (no error)
-        await client.PUT("/blogposts-optional", {
+        await client.core("put", "/blogposts-optional", {
           body: {
             title: "",
             publish_date: 3,
@@ -489,7 +492,7 @@ describe("client", () => {
     it("multipart/form-data", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.PUT("/contact", {
+      await client.core("put", "/contact", {
         body: {
           name: "John Doe",
           email: "test@email.email",
@@ -672,7 +675,7 @@ describe("client", () => {
     it("handles literal 2XX and 4XX codes", async () => {
       const client = createClient<paths>();
       mockFetch({ status: 201, body: '{"status": "success"}' });
-      const { data, error } = await client.PUT("/media", {
+      const { data, error } = await client.core("put", "/media", {
         body: { media: "base64", name: "myImage" },
       });
 
@@ -699,7 +702,7 @@ describe("client", () => {
       const mockData = { status: "success" };
       const client = createClient<paths>();
       mockFetchOnce({ status: 201, body: JSON.stringify(mockData) });
-      const { data, error, response } = await client.PUT("/blogposts", {
+      const { data, error, response } = await client.core("put", "/blogposts", {
         body: {
           title: "New Post",
           body: "<p>Best post yet</p>",
@@ -722,7 +725,7 @@ describe("client", () => {
       const mockData = { message: "My reply" };
       const client = createClient<paths>();
       mockFetchOnce({ status: 201, body: JSON.stringify(mockData) });
-      const { data, error, response } = await client.PUT("/comment", {
+      const { data, error, response } = await client.core("put", "/comment", {
         params: {},
         body: {
           message: "My reply",
