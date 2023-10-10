@@ -32,11 +32,7 @@ describe("client", () => {
   it("generates all proper functions", () => {
     const client = createClient<paths>();
 
-    expect(client).toHaveProperty("DELETE");
-    expect(client).toHaveProperty("OPTIONS");
-    expect(client).toHaveProperty("HEAD");
-    expect(client).toHaveProperty("PATCH");
-    expect(client).toHaveProperty("TRACE");
+    expect(client).toHaveProperty("core");
   });
 
   describe("TypeScript checks", () => {

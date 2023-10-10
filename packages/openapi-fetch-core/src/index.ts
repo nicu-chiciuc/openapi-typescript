@@ -182,39 +182,6 @@ export default function createClient<Paths extends {}>(
     return { error, response: response as any };
   }
 
-  type GetPaths = PathsWithMethod<Paths, "get">;
-  type PutPaths = PathsWithMethod<Paths, "put">;
-  type PostPaths = PathsWithMethod<Paths, "post">;
-  type DeletePaths = PathsWithMethod<Paths, "delete">;
-  type OptionsPaths = PathsWithMethod<Paths, "options">;
-  type HeadPaths = PathsWithMethod<Paths, "head">;
-  type PatchPaths = PathsWithMethod<Paths, "patch">;
-  type TracePaths = PathsWithMethod<Paths, "trace">;
-  type GetFetchOptions<P extends GetPaths> = FetchOptions<
-    FilterKeys<Paths[P], "get">
-  >;
-  type PutFetchOptions<P extends PutPaths> = FetchOptions<
-    FilterKeys<Paths[P], "put">
-  >;
-  type PostFetchOptions<P extends PostPaths> = FetchOptions<
-    FilterKeys<Paths[P], "post">
-  >;
-  type DeleteFetchOptions<P extends DeletePaths> = FetchOptions<
-    FilterKeys<Paths[P], "delete">
-  >;
-  type OptionsFetchOptions<P extends OptionsPaths> = FetchOptions<
-    FilterKeys<Paths[P], "options">
-  >;
-  type HeadFetchOptions<P extends HeadPaths> = FetchOptions<
-    FilterKeys<Paths[P], "head">
-  >;
-  type PatchFetchOptions<P extends PatchPaths> = FetchOptions<
-    FilterKeys<Paths[P], "patch">
-  >;
-  type TraceFetchOptions<P extends TracePaths> = FetchOptions<
-    FilterKeys<Paths[P], "trace">
-  >;
-
   // Added separately because highlighter breaks on vscode.
   const core = <
     TMethod extends HttpMethod,
