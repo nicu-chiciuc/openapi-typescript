@@ -229,7 +229,10 @@ export default function createClient<Paths extends {}>(
       : [FetchOptions<FilterKeys<Paths[P], TMethod>>]
     // eslint-disable-next-line arrow-body-style
   ) => {
-    return coreFetch<P, TMethod>(url, { ...init[0], method } as any);
+    return coreFetch<P, TMethod>(url, {
+      ...init[0],
+      method: method.toUpperCase(),
+    } as any);
   };
 
   return {

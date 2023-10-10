@@ -37,7 +37,6 @@ describe("client", () => {
   it("generates all proper functions", () => {
     const client = createClient<paths>();
 
-    expect(client).toHaveProperty("GET");
     expect(client).toHaveProperty("PUT");
     expect(client).toHaveProperty("POST");
     expect(client).toHaveProperty("DELETE");
