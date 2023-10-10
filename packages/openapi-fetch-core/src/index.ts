@@ -101,10 +101,24 @@ export default function createClient<Paths extends {}>(
     baseUrl = baseUrl.slice(0, -1); // remove trailing slash
   }
 
-  async function coreFetch<P extends keyof Paths, M extends HttpMethod>(
-    url: P,
-    fetchOptions: FetchOptions<M extends keyof Paths[P] ? Paths[P][M] : never>,
-  ): Promise<FetchResponse<M extends keyof Paths[P] ? Paths[P][M] : unknown>> {
+  async function coreFetch<
+    TMethod extends HttpMethod,
+    TPath extends keyof Paths,
+  >(
+    method: TMethod,
+    url: TPath,
+    ...args: HasRequiredKeys<
+      FetchOptions<FilterKeys<Paths[TPath], TMethod>>
+    > extends never
+      ? [FetchOptions<FilterKeys<Paths[TPath], TMethod>>?]
+      : [FetchOptions<FilterKeys<Paths[TPath], TMethod>>]
+  ): Promise<
+    FetchResponse<
+      TMethod extends keyof Paths[TPath] ? Paths[TPath][TMethod] : unknown
+    >
+  > {
+    const fetchOptions = { ...args[0], method: method.toUpperCase() };
+
     const {
       fetch = baseFetch,
       headers,
@@ -182,27 +196,7 @@ export default function createClient<Paths extends {}>(
     return { error, response: response as any };
   }
 
-  // Added separately because highlighter breaks on vscode.
-  const core = <
-    TMethod extends HttpMethod,
-    P extends PathsWithMethod<Paths, TMethod>,
-  >(
-    method: TMethod,
-    url: P,
-    ...init: HasRequiredKeys<
-      FetchOptions<FilterKeys<Paths[P], TMethod>>
-    > extends never
-      ? [FetchOptions<FilterKeys<Paths[P], TMethod>>?]
-      : [FetchOptions<FilterKeys<Paths[P], TMethod>>]
-    // eslint-disable-next-line arrow-body-style
-  ) => {
-    return coreFetch<P, TMethod>(url, {
-      ...init[0],
-      method: method.toUpperCase(),
-    } as any);
-  };
-
-  return core;
+  return coreFetch;
 }
 
 // utils

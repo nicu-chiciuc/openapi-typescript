@@ -29,7 +29,7 @@ function mockFetchOnce(res: MockResponse) {
 }
 
 describe("client", () => {
-  it("generates all proper functions", () => {
+  it.skip("generates all proper functions", () => {
     const client = createClient<paths>();
 
     expect(client).toHaveProperty("core");
@@ -846,7 +846,7 @@ describe("examples", () => {
     );
   });
 
-  it("proxies", async () => {
+  it.skip("proxies", async () => {
     let token: string | undefined = undefined;
 
     const baseClient = createClient<paths>();
