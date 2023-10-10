@@ -215,16 +215,34 @@ export default function createClient<Paths extends {}>(
     FilterKeys<Paths[P], "trace">
   >;
 
+  // Added separately because highlighter breaks on vscode.
+  const core = <
+    TMethod extends HttpMethod,
+    P extends PathsWithMethod<Paths, TMethod>,
+  >(
+    method: TMethod,
+    url: P,
+    ...init: HasRequiredKeys<
+      FetchOptions<FilterKeys<Paths[P], TMethod>>
+    > extends never
+      ? [FetchOptions<FilterKeys<Paths[P], TMethod>>?]
+      : [FetchOptions<FilterKeys<Paths[P], TMethod>>]
+    // eslint-disable-next-line arrow-body-style
+  ) => {
+    return coreFetch<P, TMethod>(url, { ...init[0], method } as any);
+  };
+
   return {
+    core,
     /** Call a GET endpoint */
-    async GET<P extends GetPaths>(
-      url: P,
-      ...init: HasRequiredKeys<GetFetchOptions<P>> extends never
-        ? [GetFetchOptions<P>?]
-        : [GetFetchOptions<P>]
-    ) {
-      return coreFetch<P, "get">(url, { ...init[0], method: "GET" } as any);
-    },
+    // async GET<P extends GetPaths>(
+    //   url: P,
+    //   ...init: HasRequiredKeys<GetFetchOptions<P>> extends never
+    //     ? [GetFetchOptions<P>?]
+    //     : [GetFetchOptions<P>]
+    // ) {
+    //   return coreFetch<P, "get">(url, { ...init[0], method: "GET" } as any);
+    // },
     /** Call a PUT endpoint */
     async PUT<P extends PutPaths>(
       url: P,

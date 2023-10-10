@@ -56,7 +56,7 @@ describe("client", () => {
         status: 200,
         body: JSON.stringify(["one", "two", "three"]),
       });
-      const dataRes = await client.GET("/string-array");
+      const dataRes = await client.core("get", "/string-array");
 
       // … is initially possibly undefined
       // @ts-expect-error
@@ -78,7 +78,7 @@ describe("client", () => {
         status: 500,
         body: JSON.stringify({ code: 500, message: "Something went wrong" }),
       });
-      const errorRes = await client.GET("/string-array");
+      const errorRes = await client.core("get", "/string-array");
 
       // … is initially possibly undefined
       // @ts-expect-error
@@ -102,29 +102,33 @@ describe("client", () => {
         mockFetch({ status: 200, body: JSON.stringify({ message: "OK" }) });
 
         // expect error on missing 'params'
-        await client.GET("/blogposts/{post_id}", {
+        await client.core("get", "/blogposts/{post_id}", {
           // @ts-expect-error
           TODO: "this should be an error",
         });
 
         // expect error on empty params
-        await client.GET("/blogposts/{post_id}", {
+        await client.core("get", "/blogposts/{post_id}", {
           // @ts-expect-error
           params: { TODO: "this should be an error" },
         });
 
         // expect error on empty params.path
-        // @ts-expect-error
-        await client.GET("/blogposts/{post_id}", { params: { path: {} } });
+        await client.core("get", "/blogposts/{post_id}", {
+          params: {
+            // @ts-expect-error
+            path: {},
+          },
+        });
 
         // expect error on mismatched type (number v string)
-        await client.GET("/blogposts/{post_id}", {
+        await client.core("get", "/blogposts/{post_id}", {
           // @ts-expect-error
           params: { path: { post_id: 1234 } },
         });
 
         // (no error)
-        await client.GET("/blogposts/{post_id}", {
+        await client.core("get", "/blogposts/{post_id}", {
           params: { path: { post_id: "1234" } },
         });
 
@@ -139,23 +143,25 @@ describe("client", () => {
         mockFetch({ status: 200, body: JSON.stringify({ status: "success" }) });
 
         // expet error on missing header
-        // @ts-expect-error
-        await client.GET("/header-params", { TODO: "this should be an error" });
+        await client.core("get", "/header-params", {
+          // @ts-expect-error
+          TODO: "this should be an error",
+        });
 
         // expect error on incorrect header
-        await client.GET("/header-params", {
+        await client.core("get", "/header-params", {
           // @ts-expect-error
           params: { header: { foo: "bar" } },
         });
 
         // expect error on mismatched type
-        await client.GET("/header-params", {
+        await client.core("get", "/header-params", {
           // @ts-expect-error
           params: { header: { "x-required-header": true } },
         });
 
         // (no error)
-        await client.GET("/header-params", {
+        await client.core("get", "/header-params", {
           params: { header: { "x-required-header": "correct" } },
         });
 
@@ -169,7 +175,7 @@ describe("client", () => {
         it("basic", async () => {
           const client = createClient<paths>();
           mockFetchOnce({ status: 200, body: "{}" });
-          await client.GET("/blogposts/{post_id}", {
+          await client.core("get", "/blogposts/{post_id}", {
             params: {
               path: { post_id: "my-post" },
               query: { version: 2, format: "json" },
@@ -184,7 +190,7 @@ describe("client", () => {
         it("array params", async () => {
           const client = createClient<paths>();
           mockFetchOnce({ status: 200, body: "{}" });
-          await client.GET("/blogposts", {
+          await client.core("get", "/blogposts", {
             params: {
               query: { tags: ["one", "two", "three"] },
             },
@@ -198,7 +204,7 @@ describe("client", () => {
         it("empty/null params", async () => {
           const client = createClient<paths>();
           mockFetchOnce({ status: 200, body: "{}" });
-          await client.GET("/blogposts/{post_id}", {
+          await client.core("get", "/blogposts/{post_id}", {
             params: {
               path: { post_id: "my-post" },
               query: { version: undefined, format: null as any },
@@ -212,7 +218,7 @@ describe("client", () => {
           it("custom", async () => {
             const client = createClient<paths>();
             mockFetchOnce({ status: 200, body: "{}" });
-            await client.GET("/blogposts/{post_id}", {
+            await client.core("get", "/blogposts/{post_id}", {
               params: {
                 path: { post_id: "my-post" },
                 query: { version: 2, format: "json" },
@@ -230,7 +236,7 @@ describe("client", () => {
               querySerializer: (q) => `alpha=${q.version}&beta=${q.format}`,
             });
             mockFetchOnce({ status: 200, body: "{}" });
-            await client.GET("/blogposts/{post_id}", {
+            await client.core("get", "/blogposts/{post_id}", {
               params: {
                 path: { post_id: "my-post" },
                 query: { version: 2, format: "json" },
@@ -247,7 +253,7 @@ describe("client", () => {
               querySerializer: () => "query",
             });
             mockFetchOnce({ status: 200, body: "{}" });
-            await client.GET("/blogposts/{post_id}", {
+            await client.core("get", "/blogposts/{post_id}", {
               params: {
                 path: { post_id: "my-post" },
                 query: { version: 2, format: "json" },
@@ -337,13 +343,13 @@ describe("client", () => {
     it("respects baseUrl", async () => {
       let client = createClient<paths>({ baseUrl: "https://myapi.com/v1" });
       mockFetch({ status: 200, body: JSON.stringify({ message: "OK" }) });
-      await client.GET("/self");
+      await client.core("get", "/self");
 
       // assert baseUrl and path mesh as expected
       expect(fetchMocker.mock.calls[0][0]).toBe("https://myapi.com/v1/self");
 
       client = createClient<paths>({ baseUrl: "https://myapi.com/v1/" });
-      await client.GET("/self");
+      await client.core("get", "/self");
       // assert trailing '/' was removed
       expect(fetchMocker.mock.calls[1][0]).toBe("https://myapi.com/v1/self");
     });
@@ -356,7 +362,7 @@ describe("client", () => {
         status: 200,
         body: JSON.stringify({ email: "user@user.com" }),
       });
-      await client.GET("/self");
+      await client.core("get", "/self");
 
       // assert default headers were passed
       const options = fetchMocker.mock.calls[0][1];
@@ -376,7 +382,7 @@ describe("client", () => {
         status: 200,
         body: JSON.stringify({ email: "user@user.com" }),
       });
-      await client.GET("/self", {
+      await client.core("get", "/self", {
         params: {},
         headers: { "Cache-Control": "no-cache" },
       });
@@ -397,7 +403,7 @@ describe("client", () => {
         status: 200,
         body: JSON.stringify({ email: "user@user.com" }),
       });
-      await client.GET("/self", { params: {} });
+      await client.core("get", "/self", { params: {} });
 
       // assert default headers were passed
       const options = fetchMocker.mock.calls[0][1];
@@ -420,7 +426,7 @@ describe("client", () => {
       mockFetchOnce({ status: 200, body: "{}" });
 
       const client = createClient<paths>({ fetch: customFetch });
-      const { data } = await client.GET("/self");
+      const { data } = await client.core("get", "/self");
 
       // assert data was returned from custom fetcher
       expect(data).toEqual({ works: true });
@@ -449,11 +455,13 @@ describe("client", () => {
       const client = createClient<paths>({ fetch: fallbackFetch });
 
       // assert override function was called
-      const fetch1 = await client.GET("/self", { fetch: overrideFetch });
+      const fetch1 = await client.core("get", "/self", {
+        fetch: overrideFetch,
+      });
       expect(fetch1.data).toEqual({ fetcher: "override" });
 
       // assert fallback function still persisted (and wasn’t overridden)
-      const fetch2 = await client.GET("/self");
+      const fetch2 = await client.core("get", "/self");
       expect(fetch2.data).toEqual({ fetcher: "fallback" });
 
       // assert global fetch was never called
@@ -465,7 +473,7 @@ describe("client", () => {
     it("escapes URLs properly", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.GET("/blogposts/{post_id}", {
+      await client.core("get", "/blogposts/{post_id}", {
         params: {
           path: {
             post_id: "post?id = 🥴",
@@ -535,7 +543,7 @@ describe("client", () => {
           message: "An unexpected error occurred",
         }),
       });
-      const { error } = await client.GET("/default-as-error");
+      const { error } = await client.core("get", "/default-as-error");
 
       // discard `data` object
       if (!error) {
@@ -552,14 +560,16 @@ describe("client", () => {
       it("text", async () => {
         const client = createClient<paths>();
         mockFetchOnce({ status: 200, body: "{}" });
-        const { data } = await client.GET("/anyMethod", { parseAs: "text" });
+        const { data } = await client.core("get", "/anyMethod", {
+          parseAs: "text",
+        });
         expect(data).toBe("{}");
       });
 
       it("arrayBuffer", async () => {
         const client = createClient<paths>();
         mockFetchOnce({ status: 200, body: "{}" });
-        const { data } = await client.GET("/anyMethod", {
+        const { data } = await client.core("get", "/anyMethod", {
           parseAs: "arrayBuffer",
         });
         expect(data instanceof ArrayBuffer).toBe(true);
@@ -568,7 +578,9 @@ describe("client", () => {
       it("blob", async () => {
         const client = createClient<paths>();
         mockFetchOnce({ status: 200, body: "{}" });
-        const { data } = await client.GET("/anyMethod", { parseAs: "blob" });
+        const { data } = await client.core("get", "/anyMethod", {
+          parseAs: "blob",
+        });
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         expect((data as any).constructor.name).toBe("Blob");
       });
@@ -576,7 +588,9 @@ describe("client", () => {
       it("stream", async () => {
         const client = createClient<paths>();
         mockFetchOnce({ status: 200, body: "{}" });
-        const { data } = await client.GET("/anyMethod", { parseAs: "stream" });
+        const { data } = await client.core("get", "/anyMethod", {
+          parseAs: "stream",
+        });
         expect(data instanceof Buffer).toBe(true);
       });
     });
@@ -586,7 +600,7 @@ describe("client", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.GET("/anyMethod");
+      await client.core("get", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("GET");
     });
 
@@ -598,7 +612,8 @@ describe("client", () => {
       };
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: JSON.stringify(mockData) });
-      const { data, error, response } = await client.GET(
+      const { data, error, response } = await client.core(
+        "get",
         "/blogposts/{post_id}",
         {
           params: { path: { post_id: "my-post" } },
@@ -620,7 +635,8 @@ describe("client", () => {
       const mockError = { code: 404, message: "Post not found" };
       const client = createClient<paths>();
       mockFetchOnce({ status: 404, body: JSON.stringify(mockError) });
-      const { data, error, response } = await client.GET(
+      const { data, error, response } = await client.core(
+        "get",
         "/blogposts/{post_id}",
         {
           params: { path: { post_id: "my-post" } },
@@ -645,7 +661,7 @@ describe("client", () => {
     it("handles array-type responses", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "[]" });
-      const { data } = await client.GET("/blogposts", { params: {} });
+      const { data } = await client.core("get", "/blogposts", { params: {} });
       if (!data) {
         throw new Error("data empty");
       }
@@ -820,9 +836,9 @@ describe("examples", () => {
 
     // assert initial call is unauthenticated
     mockFetchOnce({ status: 200, body: "{}" });
-    await client
-      .get()
-      .GET("/blogposts/{post_id}", { params: { path: { post_id: "1234" } } });
+    await client.get().core("get", "/blogposts/{post_id}", {
+      params: { path: { post_id: "1234" } },
+    });
     expect(
       fetchMocker.mock.calls[0][1].headers.get("authorization"),
     ).toBeNull();
@@ -836,9 +852,9 @@ describe("examples", () => {
         resolve();
       }, 0),
     );
-    await client
-      .get()
-      .GET("/blogposts/{post_id}", { params: { path: { post_id: "1234" } } });
+    await client.get().core("get", "/blogposts/{post_id}", {
+      params: { path: { post_id: "1234" } },
+    });
     expect(fetchMocker.mock.calls[1][1].headers.get("authorization")).toBe(
       `Bearer ${tokenVal}`,
     );
@@ -859,7 +875,7 @@ describe("examples", () => {
 
     // assert initial call is unauthenticated
     mockFetchOnce({ status: 200, body: "{}" });
-    await client.GET("/blogposts/{post_id}", {
+    await client.core("get", "/blogposts/{post_id}", {
       params: { path: { post_id: "1234" } },
     });
     expect(
@@ -875,7 +891,7 @@ describe("examples", () => {
         resolve();
       }, 0),
     );
-    await client.GET("/blogposts/{post_id}", {
+    await client.core("get", "/blogposts/{post_id}", {
       params: { path: { post_id: "1234" } },
     });
     expect(fetchMocker.mock.calls[1][1].headers.get("authorization")).toBe(
