@@ -1,0 +1,21 @@
+{
+  "name": "@example/openapi-fetch-react-query",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev",
+    "prepare": "openapi-typescript src/lib/api/v1.json -o src/lib/api/v1.d.ts"
+  },
+  "dependencies": {
+    "@tanstack/react-query": "^4.35.0",
+    "openapi-fetch": "workspace:^",
+    "openapi-typescript": "workspace:^",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react-swc": "^3.3.2",
+    "typescript": "^5.2.2",
+    "vite": "^4.4.9"
+  }
+}
