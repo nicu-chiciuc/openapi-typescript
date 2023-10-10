@@ -237,33 +237,7 @@ export default function createClient<Paths extends {}>(
 
   return {
     core,
-    /** Call a GET endpoint */
-    // async GET<P extends GetPaths>(
-    //   url: P,
-    //   ...init: HasRequiredKeys<GetFetchOptions<P>> extends never
-    //     ? [GetFetchOptions<P>?]
-    //     : [GetFetchOptions<P>]
-    // ) {
-    //   return coreFetch<P, "get">(url, { ...init[0], method: "GET" } as any);
-    // },
-    /** Call a PUT endpoint */
-    // async PUT<P extends PutPaths>(
-    //   url: P,
-    //   ...init: HasRequiredKeys<PutFetchOptions<P>> extends never
-    //     ? [PutFetchOptions<P>?]
-    //     : [PutFetchOptions<P>]
-    // ) {
-    //   return coreFetch<P, "put">(url, { ...init[0], method: "PUT" } as any);
-    // },
     /** Call a POST endpoint */
-    async POST<P extends PostPaths>(
-      url: P,
-      ...init: HasRequiredKeys<PostFetchOptions<P>> extends never
-        ? [PostFetchOptions<P>?]
-        : [PostFetchOptions<P>]
-    ) {
-      return coreFetch<P, "post">(url, { ...init[0], method: "POST" } as any);
-    },
     /** Call a DELETE endpoint */
     async DELETE<P extends DeletePaths>(
       url: P,

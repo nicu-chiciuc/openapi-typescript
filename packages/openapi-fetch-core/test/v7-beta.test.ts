@@ -694,7 +694,7 @@ describe("client", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.POST("/anyMethod");
+      await client.core("post", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("POST");
     });
 

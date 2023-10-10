@@ -32,9 +32,6 @@ describe("client", () => {
   it("generates all proper functions", () => {
     const client = createClient<paths>();
 
-    // expect(client).toHaveProperty("GET");
-    expect(client).toHaveProperty("PUT");
-    expect(client).toHaveProperty("POST");
     expect(client).toHaveProperty("DELETE");
     expect(client).toHaveProperty("OPTIONS");
     expect(client).toHaveProperty("HEAD");
@@ -681,11 +678,11 @@ describe("client", () => {
     });
   });
 
-  describe("POST()", () => {
+  describe("core('post', )", () => {
     it("sends the correct method", async () => {
       const client = createClient<paths>();
       mockFetchOnce({ status: 200, body: "{}" });
-      await client.POST("/anyMethod");
+      await client.core("post", "/anyMethod");
       expect(fetchMocker.mock.calls[0][1]?.method).toBe("POST");
     });
 
