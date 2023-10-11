@@ -96,7 +96,7 @@ export default function createClient<Paths extends {}>(
   >(
     method: TMethod,
     url: TPath,
-    ...args: HasRequiredKeys<
+    ...[reqOptions]: HasRequiredKeys<
       FetchOptions<FilterKeys<Paths[TPath], TMethod>>
     > extends never
       ? [FetchOptions<FilterKeys<Paths[TPath], TMethod>>?]
@@ -110,26 +110,36 @@ export default function createClient<Paths extends {}>(
       fetch: baseFetch = globalThis.fetch,
       querySerializer: globalQuerySerializer,
       bodySerializer: globalBodySerializer,
-      ...options
+      ...otherClientOptions
     } = clientOptions;
 
-    let baseUrl = options.baseUrl ?? "";
+    let baseUrl = otherClientOptions.baseUrl ?? "";
     if (baseUrl.endsWith("/")) {
       baseUrl = baseUrl.slice(0, -1); // remove trailing slash
     }
 
-    const fetchOptions = { ...args[0], method: method.toUpperCase() };
+    const fetchOptions = {
+      fetch: baseFetch,
+      params: {} satisfies DefaultParamsOption,
+      parseAs: "json" as const,
+      querySerializer: globalQuerySerializer ?? defaultQuerySerializer,
+      bodySerializer: globalBodySerializer ?? defaultBodySerializer,
+
+      ...reqOptions,
+
+      method: method.toUpperCase(),
+    };
 
     const {
-      fetch = baseFetch,
+      fetch,
       headers,
       body: requestBody,
-      params = {},
-      parseAs = "json",
-      querySerializer = globalQuerySerializer ?? defaultQuerySerializer,
-      bodySerializer = globalBodySerializer ?? defaultBodySerializer,
+      params,
+      parseAs,
+      querySerializer,
+      bodySerializer,
       ...init
-    } = fetchOptions || {};
+    } = fetchOptions;
 
     // URL
     const finalURL = createFinalURL(url as string, {
@@ -137,6 +147,7 @@ export default function createClient<Paths extends {}>(
       params,
       querySerializer,
     });
+
     const finalHeaders = mergeHeaders(
       DEFAULT_HEADERS,
       clientOptions?.headers,
@@ -147,10 +158,11 @@ export default function createClient<Paths extends {}>(
     // fetch!
     const requestInit: RequestInit = {
       redirect: "follow",
-      ...options,
+      ...otherClientOptions,
       ...init,
       headers: finalHeaders,
     };
+
     if (requestBody) {
       requestInit.body = bodySerializer(requestBody as any);
     }
