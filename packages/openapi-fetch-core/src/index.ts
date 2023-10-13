@@ -87,12 +87,17 @@ export type RequestOptions<T> = ParamsOption<T> &
     fetch?: ClientOptions["fetch"];
   };
 
+/**
+The only reason why the function returns another functions
+is because it's necessary to manually set the `Paths` generic
+since it doesn't have any argument to infer from.
+ */
 export default function createClient<Paths extends {}>(
   clientOptions: ClientOptions = {},
 ) {
-  async function coreFetch<
+  return async function coreFetch<
     TMethod extends HttpMethod,
-    TPath extends keyof Paths,
+    TPath extends PathsWithMethod<Paths, TMethod>,
   >(
     method: TMethod,
     url: TPath,
@@ -170,6 +175,7 @@ export default function createClient<Paths extends {}>(
     if (requestInit.body instanceof FormData) {
       finalHeaders.delete("Content-Type");
     }
+
     const response = await fetch(finalURL, requestInit);
 
     // handle empty content
@@ -207,9 +213,7 @@ export default function createClient<Paths extends {}>(
       error = await response.clone().text();
     }
     return { error, response: response as any };
-  }
-
-  return coreFetch;
+  };
 }
 
 // utils

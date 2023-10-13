@@ -1,10 +1,9 @@
 {
-  "name": "openapi-fetch-core",
-  "description": "Fast, typesafe fetch client for your OpenAPI schema. Only 2kb (min). Works with React, Vue, Svelte, or vanilla JS.",
+  "name": "@robolex/openapi-fetch-core",
+  "description": "Fork of openapi-fetch that replaces return GET/POST... functions with a single function",
   "version": "0.7.10",
   "author": {
-    "name": "Drew Powers",
-    "email": "drew@pow.rs"
+    "name": "Nicu Chiciuc"
   },
   "license": "MIT",
   "type": "module",
