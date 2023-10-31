@@ -1,10 +1,9 @@
 {
-  "name": "openapi-fetch",
-  "description": "Fast, typesafe fetch client for your OpenAPI schema. Only 2kb (min). Works with React, Vue, Svelte, or vanilla JS.",
+  "name": "@robolex/openapi-fetch-core",
+  "description": "Fork of openapi-fetch that replaces return GET/POST... functions with a single function",
   "version": "0.7.10",
   "author": {
-    "name": "Drew Powers",
-    "email": "drew@pow.rs"
+    "name": "Nicu Chiciuc"
   },
   "license": "MIT",
   "type": "module",
@@ -57,7 +56,9 @@
     "lint:prettier": "prettier --check \"{src,test}/**/*\"",
     "test": "pnpm run test:ts && npm run test:js",
     "test:js": "vitest run",
+    "test:js:w": "vitest",
     "test:ts": "tsc --noEmit",
+    "test:ts:w": "tsc --noEmit --watch",
     "prepare": "openapi-typescript test/v1.yaml -o test/v1.d.ts",
     "prepublish": "pnpm run prepare && pnpm run build",
     "version": "pnpm run prepare && pnpm run build"
